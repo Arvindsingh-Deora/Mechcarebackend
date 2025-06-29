@@ -11,24 +11,34 @@ const userRoute = require("./route/userRoute");
 const paymentRoutes = require('./route/paymentRoutes');
 const requestRoutes = require("./route/requestroute");
 const mechanicRoutes = require('./route/mechanicRoute');
-const authRoutes = require('./route/authRoutes');// 👈 changed name for socket injection
+const authRoutes = require('./route/authRoutes');
 
 const app = express();
-const server = http.createServer(app); // 💡 Required for Socket.io
+const server = http.createServer(app);
 
-// Middleware
-app.use(cors());
+// ✅ Proper CORS config (combine into one)
+app.use(cors({
+  origin: [
+    "https://mechcarenew.vercel.app", // ✅ Vercel frontend
+    "http://localhost:3000"           // ✅ For local testing
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
 // ✅ Setup Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // 🔁 Change this in production (Vercel link)
+    origin: [
+      "https://mechcarenew.vercel.app",
+      "http://localhost:3000"
+    ],
     methods: ["GET", "POST"]
   }
 });
 
-// 🔌 Handle socket connection
+// 🔌 Socket connection logs
 io.on("connection", (socket) => {
   console.log("🟢 Socket connected:", socket.id);
 
@@ -37,10 +47,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// Temporary in-memory OTP store
-const otpStore = {}; // ✅ You can move this to Redis or DB in future
-
-// ✅ Routes (inject io + otpStore into authRoutes)
+// ✅ Use Routes
 app.use('/api/auth', authRoutes);
 app.use("/api/users", userRoute);
 app.use("/api/users", profileRoutes);
@@ -48,17 +55,13 @@ app.use('/api/payment', paymentRoutes);
 app.use("/api/requests", requestRoutes);
 app.use('/api/mechanics', mechanicRoutes);
 
-// ✅ MongoDB Connection
+// ✅ Connect MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => {
-  console.log("✅ Connected to MongoDB Atlas");
-})
-.catch((err) => {
-  console.error("❌ MongoDB connection error:", err);
-});
+.then(() => console.log("✅ Connected to MongoDB Atlas"))
+.catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
