@@ -11,7 +11,7 @@ const userRoute = require("./route/userRoute");
 const paymentRoutes = require('./route/paymentRoutes');
 const requestRoutes = require("./route/requestroute");
 const mechanicRoutes = require('./route/mechanicRoute');
-const authRoutes = require('./route/authRoutes');
+
 
 const app = express();
 const server = http.createServer(app);
@@ -48,7 +48,12 @@ io.on("connection", (socket) => {
 });
 
 // ✅ Use Routes
+const authRoutes = require('./route/authRoutes');
+console.log("✅ Loaded authRoutes");
+
 app.use('/api/auth', authRoutes);
+console.log("✅ Registered /api/auth routes");
+
 app.use("/api/users", userRoute);
 app.use("/api/users", profileRoutes);
 app.use('/api/payment', paymentRoutes);
