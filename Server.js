@@ -70,6 +70,11 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
+
+app.get("/my-ip", (req, res) => {
+  res.send(req.ip);
+});
+
 server.listen(PORT, () => {
   console.log(`🚀 Backend running on http://localhost:${PORT}`);
 });
