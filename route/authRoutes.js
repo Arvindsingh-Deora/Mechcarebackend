@@ -2,8 +2,9 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-const MSG91_AUTHKEY = '458068AbXkhQJ76860e092P1';
-const TEMPLATE_ID = '6860e414d6fc05230659f582';
+const MSG91_AUTHKEY = process.env.MSG91_AUTHKEY;
+const TEMPLATE_ID = process.env.TEMPLATE_ID;
+
 
 // Send OTP
 router.post('/send-otp', async (req, res) => {
